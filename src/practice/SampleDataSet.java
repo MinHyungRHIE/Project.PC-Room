@@ -1,6 +1,8 @@
 package practice;
 
-public class SampleDataSet {
+import java.io.Serializable;
+
+public class SampleDataSet implements Serializable {
     private String username;
     private String password;
 
