@@ -14,14 +14,8 @@ public class ServerService {
     // 회원가입 서비스
     public ResponseModel signUpService(SignUpRequest request) throws Exception{
 
-        //서비스에서는 ID가 있는지 없는지 비교해주고, 패스워드가 맞는지 틀린지 비교
-//        request.getId();
-//        request.getPassword();
-//        request.getCheckPassword();
-//        request.getBirth();
-//        request.getGender();
-//        request.getPhoneNumber();
-//        request.getUsername();
+        //서비스에서는 ID가 있는지 없는지 비교해주고
+
 
         ResponseModel response = new ResponseModel();
         if(repository.updateUserInfo(request)){

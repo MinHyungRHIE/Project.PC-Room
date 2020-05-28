@@ -22,7 +22,8 @@ public class ServerThread extends Thread{
                 ResponseModel response = controller.choiceService((CommunicationModel)state.getObjectInputStream().readObject());
                 state.getObjectOutputStream().writeObject(response);
             } catch (Exception e) {
-                e.printStackTrace();
+                state.destroy();
+                return;
             }
         }
     }

@@ -3,7 +3,6 @@ package server.model;
 public class User {
     private String id;
     private String password;
-    private String role;
 
     public String getId() {
         return id;
@@ -21,7 +20,4 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() { return role; }
-
-    public void setRole(String role) { this.role = role; }
 }

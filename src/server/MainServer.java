@@ -22,6 +22,7 @@ public class MainServer {
 
             // Database 접근 객체 (모든 Thread들이 공유)
             ServerRepository repo = new ServerRepository();
+            repo.checkDatabaseState();
             
             // 서버 리스닝 시작
             System.out.println("=====서버가 시작되었음=====");
@@ -32,19 +33,14 @@ public class MainServer {
                 state.setRepository(repo);
                 ServerThread getClient = new ServerThread(state);
                 getClient.start();
+                System.out.println(":::클라이언트가 접속함");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("MainServer-startServer() Error:"+e);
         }
-
     }
 
     public static void main(String[] args) {
-        try{
-            startServer();
-        }catch(Exception e){
-            System.out.println("MainServer-main() Error:"+e);
-        }
-
+        startServer();
     }
 }

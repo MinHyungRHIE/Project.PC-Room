@@ -51,6 +51,7 @@ public class ServerState {
                 if(outputStream != null) { outputStream.close(); };
                 if(socket != null) { socket.close(); };
                 isDestroyed = true;
+                System.out.println("통신 객체들이 close되었습니다. -- 클라이언트 접속 해제");
 
             }else{
                 System.out.println("이미 모든 통신 객체들이 close되었습니다.");

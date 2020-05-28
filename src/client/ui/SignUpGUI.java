@@ -124,7 +124,6 @@ public class SignUpGUI {
         inputPhone.setText("ex)01005240307");
         inputPhone.setBounds(160,453,217,41);
         inputPhone.setFont(new Font("돋움", Font.BOLD, 13));
-
         inputPhone.addMouseListener(new MouseListener() {
 
             public void mouseClicked(MouseEvent e) {
