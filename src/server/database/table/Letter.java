@@ -1,12 +1,13 @@
 package server.database.table;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class Letter {
     public String own;
     public String from;
     public String to;
-    public LocalDateTime when;
+    public ZonedDateTime when;
     public String content;
 
     @Override

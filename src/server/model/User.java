@@ -1,5 +1,7 @@
 package server.model;
 
+import server.database.table.UserInfo;
+
 public class User {
     private String id;
     private String username;
@@ -7,6 +9,13 @@ public class User {
     private String gender;
     private String phoneNumber;
 
+    public User(UserInfo userinfo){
+        this.id = userinfo.id;
+        this.username = userinfo.username;
+        this.birth = userinfo.birth;
+        this.gender = userinfo.gender;
+        this.phoneNumber = userinfo.phoneNumber;
+    }
 
     /* Getters and Setters */
     public String getId() {

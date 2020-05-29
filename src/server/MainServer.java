@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -26,7 +27,7 @@ public class MainServer {
             // Database 접근 객체 (모든 Thread들이 공유)
             ServerRepository repo = new ServerRepository();
             repo.checkDatabaseState();
-            
+
             // 서버에 연결된 client들의 정보를 얻는 객체 (모든 Thread들이 공유
             LinkedList<ServerState> clientList = new LinkedList<ServerState>();
 
@@ -42,7 +43,7 @@ public class MainServer {
                 System.out.println(":::클라이언트가 접속함["+sock.getInetAddress()+"]");
             }
         } catch (Exception e) {
-            System.out.println("MainServer-startServer() Error:"+e);
+            System.out.println("MainServer:startServer() : " + e);
         }
     }
 

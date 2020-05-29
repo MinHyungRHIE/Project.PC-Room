@@ -1,20 +1,17 @@
 package client;
 
 import client.module.Connector;
-import client.ui.LoginGUI;
-import client.ui.SignUpGUI;
-
-import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.net.InetSocketAddress;
-import java.net.Socket;
+import client.module.GuiManagerMode;
+import client.module.GuiProfile;
 
 public class Client {
 
     public static void main(String[] args) {
         Connector connector = new Connector();
         connector.connectToServer();
-        new LoginGUI(connector);
+        connector.createGuiManager();
+        GuiProfile profile = new GuiProfile();
+        profile.setGuiName("LoginGUI").setMode(GuiManagerMode.NEW_WINDOW_AND_CLOSE_ALL_OLD_WINDOW);
+        connector.guiManager(profile);
     }
 }

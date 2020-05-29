@@ -10,14 +10,16 @@ public class ServerController {
 
     private ServerService service;
 
-    public ServerController(ServerRepository repository, LinkedList<ServerState> clientList) {
-        this.service = new ServerService(repository, clientList);
+    public ServerController(ServerState state, LinkedList<ServerState> clientList) {
+        this.service = new ServerService(state, clientList);
     }
 
     public ResponseModel choiceService(RequestModel request){
 
         try{
-            if(request instanceof LoginRequest){
+            if(request instanceof Ping){
+                return new ResponseModel();
+            }else if(request instanceof LoginRequest){
                 return service.loginService((LoginRequest)request);
             }else if(request instanceof CheckIdRequest){
                 return service.checkIdService((CheckIdRequest)request);
@@ -28,7 +30,8 @@ public class ServerController {
             }
 
         }catch (Exception e){
-            System.out.println(e);
+            System.out.println("ServerController:choiceService() : " + e);
+            e.printStackTrace();
         }
 
         return null;

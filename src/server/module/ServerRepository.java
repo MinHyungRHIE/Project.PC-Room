@@ -132,6 +132,22 @@ public class ServerRepository {
         return true;
     }
 
+    /**
+     * 유저 정보를 얻는다.
+     */
+    public UserInfo getUserInfo(String id) throws Exception{
+        ObjectInputStream fromDatabase = new ObjectInputStream(new FileInputStream(dbUserInfo));
+        HashSet<UserInfo> data = (HashSet<UserInfo>)fromDatabase.readObject();
 
+        Iterator<UserInfo> itr = data.iterator();
+
+        while(itr.hasNext()){
+            UserInfo tmp = itr.next();
+            if(tmp.id.equals(id)){
+                return tmp;
+            }
+        }
+        return null;
+    }
 
 }

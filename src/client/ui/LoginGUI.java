@@ -1,7 +1,10 @@
 package client.ui;
 
 import client.module.Connector;
+import client.module.GuiManagerMode;
+import client.module.GuiProfile;
 import server.model.request.LoginRequest;
+import server.model.request.RequestModel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -67,8 +70,9 @@ public class LoginGUI extends JFrame {
 
                     if(result.equals("success")) {
                         JOptionPane.showMessageDialog(mainFrame, "로그인 성공", "성공",JOptionPane.INFORMATION_MESSAGE);
-//						clientHandler.createMainGUI(clientHandler, id, "test");
-                        mainFrame.dispose();
+                        GuiProfile profile = new GuiProfile();
+                        profile.setGuiName("MainUI").setMode(GuiManagerMode.NEW_WINDOW_AND_CLOSE_ALL_OLD_WINDOW);
+                        connector.guiManager(profile);
                     }else if(result.equals("fail")){
                         JOptionPane.showMessageDialog(mainFrame, "로그인 실패", "실패",JOptionPane.ERROR_MESSAGE);
                     }else if(result.equals("blocked")) {
@@ -92,9 +96,11 @@ public class LoginGUI extends JFrame {
         class SignUpAction implements ActionListener{
 
             public void actionPerformed(ActionEvent ae) {
-				new SignUpGUI(connector);
-
+                GuiProfile profile = new GuiProfile();
+                profile.setGuiName("SignUpGUI").setMode(GuiManagerMode.NEW_WINDOW_AND_STAY_ALL_OLD_WINDOW);
+                connector.guiManager(profile);
             }
+
         }//SignUpAction.class
 
 

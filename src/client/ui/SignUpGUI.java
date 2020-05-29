@@ -1,6 +1,8 @@
 package client.ui;
 
 import client.module.Connector;
+import client.module.GuiManagerMode;
+import client.module.GuiProfile;
 import server.model.request.CheckIdRequest;
 import server.model.request.SignUpRequest;
 
@@ -292,7 +294,9 @@ public class SignUpGUI extends JFrame{
 
                 //모든 서식 준비 완료
                 JOptionPane.showMessageDialog(mainFrame, result , "결과", JOptionPane.INFORMATION_MESSAGE);
-                mainFrame.dispose();
+                GuiProfile profile = new GuiProfile();
+                profile.setMode(GuiManagerMode.CLOSE_THIS_WINDOW).setTarget(mainFrame);
+                connector.guiManager(profile);
             }
         }
         ok.addActionListener(new OkAction());

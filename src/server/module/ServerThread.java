@@ -17,7 +17,7 @@ public class ServerThread extends Thread{
     public ServerThread(ServerState state, LinkedList<ServerState> clientList) {
         state.initialize();
         this.state = state;
-        this.controller = new ServerController(state.getRepository(), clientList);
+        this.controller = new ServerController(state, clientList);
         this.clientList = clientList;
         clientList.add(this.state);
     }
@@ -28,6 +28,8 @@ public class ServerThread extends Thread{
             try {
                 followProtocol(controller.choiceService((RequestModel)state.getObjectInputStream().readObject()));
             } catch (Exception e) {
+                System.out.println("ServerThread:run() : " + e);
+                e.printStackTrace();
                 state.destroy();
                 clientList.remove(this.state);
                 System.out.println("clientList["+clientList.size()+"] : "+clientList);

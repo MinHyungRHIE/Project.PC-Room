@@ -5,6 +5,8 @@ import server.module.ServerRepository;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.LinkedList;
 
 public class ServerState {
@@ -17,6 +19,7 @@ public class ServerState {
     private ObjectOutputStream objectOutputStream; // Client로 데이터를 객체 형태를 보내는 객체
     private boolean isInitialized = false;
     private boolean isDestroyed = false;
+    private ZonedDateTime connectTime; // 연결된 시간
     private User session;
 
     // 통신용 객체들을 Socket을 기반으로 모두 초기화하기
@@ -28,6 +31,8 @@ public class ServerState {
                 this.objectInputStream = new ObjectInputStream(socket.getInputStream());
                 this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 isInitialized = true;
+                this.connectTime = ZonedDateTime.now();
+
             }else{
                 System.out.println("이미 초기화가 되었습니다.");
             }
@@ -59,6 +64,11 @@ public class ServerState {
         }
     }
 
+    // 로그인 여부 확인
+    public boolean isLogined(){
+        return this.session != null;
+    }
+
     /* Getters and Setters */
     public Socket getSocket() {
         return socket;
@@ -80,16 +90,40 @@ public class ServerState {
         return bufferedReader;
     }
 
+    public void setBufferedReader(BufferedReader bufferedReader) {
+        this.bufferedReader = bufferedReader;
+    }
+
     public PrintWriter getPrintWriter() {
         return printWriter;
+    }
+
+    public void setPrintWriter(PrintWriter printWriter) {
+        this.printWriter = printWriter;
     }
 
     public ObjectInputStream getObjectInputStream() {
         return objectInputStream;
     }
-    
+
+    public void setObjectInputStream(ObjectInputStream objectInputStream) {
+        this.objectInputStream = objectInputStream;
+    }
+
     public ObjectOutputStream getObjectOutputStream() {
         return objectOutputStream;
+    }
+
+    public void setObjectOutputStream(ObjectOutputStream objectOutputStream) {
+        this.objectOutputStream = objectOutputStream;
+    }
+
+    public ZonedDateTime getConnectTime() {
+        return connectTime;
+    }
+
+    public void setConnectTime(ZonedDateTime connectTime) {
+        this.connectTime = connectTime;
     }
 
     public User getSession() {
@@ -99,4 +133,5 @@ public class ServerState {
     public void setSession(User session) {
         this.session = session;
     }
+
 }

@@ -1,34 +1,44 @@
 package server.module;
 
-import server.model.response.ResponseModel;
 import server.model.ServerState;
+import server.model.User;
 import server.model.request.CheckIdRequest;
 import server.model.request.LoginRequest;
 import server.model.request.SignUpRequest;
+import server.model.response.ResponseModel;
 
 import java.util.LinkedList;
 
 public class ServerService {
 
+    private ServerState state;
     private ServerRepository repository;
     private LinkedList<ServerState> clientList;
 
-    public ServerService(ServerRepository repository, LinkedList<ServerState> clientList) {
-        this.repository = repository;
+    public ServerService(ServerState state, LinkedList<ServerState> clientList) {
+        this.state = state;
+        this.repository = state.getRepository();
         this.clientList = clientList;
     }
 
     public ResponseModel loginService(LoginRequest request) throws Exception{
+        boolean isLogined = false;
         ResponseModel response = new ResponseModel();
 
         if(repository.findUserInfo(request.getId(), request.getPassword())){
-            response.data.put("result","success");
-
             for(ServerState client : clientList){
-                if(request.getId().equals(client.getSession().getId())){
-                    response.data.put("result","blocked");
+                if( client.getSession() != null && request.getId().equals(client.getSession().getId())){
+                    isLogined = true;
                 }
             }
+
+            if(!isLogined){
+                this.state.setSession(new User(repository.getUserInfo(request.getId())));
+                response.data.put("result","success");
+            }else{
+                response.data.put("result","blocked");
+            }
+
         }else{
             response.data.put("result","fail");
         }
