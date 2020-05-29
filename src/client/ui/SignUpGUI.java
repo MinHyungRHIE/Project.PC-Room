@@ -1,7 +1,8 @@
 package client.ui;
 
 import client.module.Connector;
-import server.model.communication.SignUpRequest;
+import server.model.request.CheckIdRequest;
+import server.model.request.SignUpRequest;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,20 +13,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 
-public class SignUpGUI {
-    JFrame frame;
+public class SignUpGUI extends JFrame{
+    JFrame mainFrame;
     boolean isFirstAccess = true;
     boolean isCheckedId = false;
     String alreadyCheckedId = null;
     Connector connector;
 
     public SignUpGUI(Connector connector){
-
         this.connector = connector;
+        this.mainFrame = this;
 
-        frame = new JFrame();
-        frame.setTitle("회원가입");
-        frame.setSize(460,690);
+        mainFrame = new JFrame();
+        mainFrame.setTitle("회원가입");
+        mainFrame.setSize(460,690);
 
         /***아이디 생성부***/
         JLabel id = new JLabel();
@@ -37,34 +38,66 @@ public class SignUpGUI {
         checkId.setContentAreaFilled(false);
         inputId.setFont(new Font("돋움", Font.BOLD, 18));
 
+        //중복체크버튼
+        class CheckIdAction implements ActionListener{
 
-//        checkId.addActionListener(); // ActionListener
-        frame.add(id);
-        frame.add(inputId);
-        frame.add(checkId);
+            public void actionPerformed(ActionEvent e) {
+                String checkBlank = inputId.getText();
+                if(checkBlank.length()==0) {
+                    JOptionPane.showMessageDialog(mainFrame, "아이디 입력란이 빈칸입니다.", "아이디 입력바람",JOptionPane.ERROR_MESSAGE);
+                    isCheckedId = false;
+                    return;
+                }else if(!(checkBlank.length()>=4)) {
+                    JOptionPane.showMessageDialog(mainFrame, "아이디는 4자리 이상이어야 합니다", "아이디 입력바람",JOptionPane.ERROR_MESSAGE);
+                    isCheckedId = false;
+                    return;
+                }
+
+                boolean isExist = (boolean)connector.communicateWithServer(
+                        new CheckIdRequest().setId(inputId.getText())
+                ).get("result");
+
+                if(isExist) {
+                    JOptionPane.showMessageDialog(mainFrame, "이미 사용중인 아이디입니다.", "아이디 중복",JOptionPane.ERROR_MESSAGE);
+                    isCheckedId = false;
+                    alreadyCheckedId=inputId.getText();
+                }else {
+                    JOptionPane.showMessageDialog(mainFrame, "멋진 아이디네요~! 사용가능합니다.", "성공",JOptionPane.INFORMATION_MESSAGE);
+                    isCheckedId = true;
+                    alreadyCheckedId=inputId.getText();
+                }
+            }
+        }//CheckIdAction.class
+
+        checkId.addActionListener(new CheckIdAction());
+
+
+        mainFrame.add(id);
+        mainFrame.add(inputId);
+        mainFrame.add(checkId);
 
         /***이름 생성부***/
         JLabel name = new JLabel();
         JTextField inputName = new JTextField();
         inputName.setBounds(160,209,102,40);
         inputName.setFont(new Font("돋움", Font.BOLD, 18));
-        frame.add(name);
-        frame.add(inputName);
+        mainFrame.add(name);
+        mainFrame.add(inputName);
 
         /***비밀번호 생성부***/
         JLabel password = new JLabel();
         JPasswordField inputPassword = new JPasswordField();
         inputPassword.setBounds(160,256,171,40);
         inputPassword.setFont(new Font("돋움", Font.BOLD, 18));
-        frame.add(password);
-        frame.add(inputPassword);
+        mainFrame.add(password);
+        mainFrame.add(inputPassword);
 
         JLabel passwordCheck = new JLabel();
         JPasswordField inputCP = new JPasswordField();
         inputCP.setBounds(160,304,170,40);
         inputCP.setFont(new Font("돋움", Font.BOLD, 18));
-        frame.add(passwordCheck);
-        frame.add(inputCP);
+        mainFrame.add(passwordCheck);
+        mainFrame.add(inputCP);
 
         /***생년월일 생성부***/
         JLabel birth = new JLabel();
@@ -98,10 +131,10 @@ public class SignUpGUI {
         selectMonth.setFont(new Font("돋움", Font.BOLD, 12));
         selectDay.setBounds(283,352,41,41);
         selectDay.setFont(new Font("돋움", Font.BOLD, 12));
-        frame.add(birth);
-        frame.add(selectYear);
-        frame.add(selectMonth);
-        frame.add(selectDay);
+        mainFrame.add(birth);
+        mainFrame.add(selectYear);
+        mainFrame.add(selectMonth);
+        mainFrame.add(selectDay);
 
         /***성별 생성부***/
         JLabel gender = new JLabel();
@@ -113,9 +146,9 @@ public class SignUpGUI {
         selectMale.setFont(new Font("돋움", Font.PLAIN, 13));
         selectFemale.setFont(new Font("돋움", Font.PLAIN, 13));
         selectGender.add(selectMale); selectGender.add(selectFemale);
-        frame.add(gender);
-        frame.add(selectMale);
-        frame.add(selectFemale);
+        mainFrame.add(gender);
+        mainFrame.add(selectMale);
+        mainFrame.add(selectFemale);
 
         /***핸드폰 생성부***/
         JLabel phone = new JLabel();
@@ -139,9 +172,9 @@ public class SignUpGUI {
             public void mouseExited(MouseEvent e) {}
 
         });
-        frame.add(phone);
-        frame.add(inputPhone);
-        frame.add(informPhone);
+        mainFrame.add(phone);
+        mainFrame.add(inputPhone);
+        mainFrame.add(informPhone);
 
         /***회원가입 버튼***/
         JButton ok = new JButton();
@@ -180,24 +213,24 @@ public class SignUpGUI {
                 String id = inputId.getText();
 
                 if(id.length()==0) {
-                    JOptionPane.showMessageDialog(frame, "아이디를 입력하시지 않았습니다.", "실패", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "아이디를 입력하시지 않았습니다.", "실패", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-//                else if(!isCheckedId) {
-//                    JOptionPane.showMessageDialog(frame, "아이디 중복체크를 하시지 않았습니다.", "실패", JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }else if(!alreadyCheckedId.equals(id)) {
-//                    JOptionPane.showMessageDialog(frame, "아이디 입력란을 수정하셨습니다. 다시 입력하고 중복체크를 해주세요", "실패", JOptionPane.ERROR_MESSAGE);
-//                    isCheckedId = false;
-//                    return;
-//                }
+                else if(!isCheckedId) {
+                    JOptionPane.showMessageDialog(mainFrame, "아이디 중복체크를 하시지 않았습니다.", "실패", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }else if(!alreadyCheckedId.equals(id)) {
+                    JOptionPane.showMessageDialog(mainFrame, "아이디 입력란을 수정하셨습니다. 다시 입력하고 중복체크를 해주세요", "실패", JOptionPane.ERROR_MESSAGE);
+                    isCheckedId = false;
+                    return;
+                }
 
                 String name = inputName.getText();
                 if(name.length()==0) {
-                    JOptionPane.showMessageDialog(frame, "이름 입력란이 비어있습니다.", "실패", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "이름 입력란이 비어있습니다.", "실패", JOptionPane.ERROR_MESSAGE);
                     return;
                 }else if(!(name.length()>=2)) {
-                    JOptionPane.showMessageDialog(frame, "이름은 2글자 이상이어야 합니다.", "실패", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "이름은 2글자 이상이어야 합니다.", "실패", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -207,13 +240,13 @@ public class SignUpGUI {
                 String passwordCheck = new String(cPwd2);
 
                 if(password.length()==0 || passwordCheck.length()==0) {
-                    JOptionPane.showMessageDialog(frame, "비밀번호 입력 및 비밀번호 체크 입력란이 비었습니다.", "실패", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "비밀번호 입력 및 비밀번호 체크 입력란이 비었습니다.", "실패", JOptionPane.ERROR_MESSAGE);
                     return;
                 }else if(!password.equals(passwordCheck)){
-                    JOptionPane.showMessageDialog(frame, "비밀번호가 일치하지 않습니다.", "실패", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "비밀번호가 일치하지 않습니다.", "실패", JOptionPane.ERROR_MESSAGE);
                     return;
                 }else if(!(password.length() >= 4)) {
-                    JOptionPane.showMessageDialog(frame, "비밀번호는 4자리 이상이어야 합니다.", "실패", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "비밀번호는 4자리 이상이어야 합니다.", "실패", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -231,49 +264,46 @@ public class SignUpGUI {
                 }
 
                 if(selectMale.isSelected() == false && selectFemale.isSelected() == false) {
-                    JOptionPane.showMessageDialog(frame, "성별을 선택하지 않았습니다.", "성별입력안됨", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "성별을 선택하지 않았습니다.", "성별입력안됨", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
                 String phone = inputPhone.getText();
                 if(isFirstAccess) {
-                    JOptionPane.showMessageDialog(frame, "핸드폰을 입력하시지 않았습니다.", "입력 한적 없음", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "핸드폰을 입력하시지 않았습니다.", "입력 한적 없음", JOptionPane.ERROR_MESSAGE);
                     return;
                 }else if(phone.length()==0) {
-                    JOptionPane.showMessageDialog(frame, "핸드폰 입력란이 비었습니다.", "실패", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "핸드폰 입력란이 비었습니다.", "실패", JOptionPane.ERROR_MESSAGE);
                     return;
                 }else if(phone.length()!=11 || !(phone.startsWith("01"))) {
-                    JOptionPane.showMessageDialog(frame, "핸드폰 자릿수가 맞지 않거나 서식이 틀렸습니다.", "서식 오류", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "핸드폰 자릿수가 맞지 않거나 서식이 틀렸습니다.", "서식 오류", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                SignUpRequest sendToServer = new SignUpRequest();
-
-                sendToServer.setId(id);
-                sendToServer.setUsername(name);
-                sendToServer.setPassword(password);
-                sendToServer.setCheckPassword(passwordCheck);
-                sendToServer.setBirth(birth);
-                sendToServer.setGender(gender);
-                sendToServer.setPhoneNumber(phone);
-
-                String result = connector.toSignUp(sendToServer);
-
+                String result = (String)connector.communicateWithServer(
+                        new SignUpRequest()
+                        .setId(id)
+                        .setUsername(name)
+                        .setPassword(password)
+                        .setBirth(birth)
+                        .setGender(gender)
+                        .setPhoneNumber(phone)
+                ).get("result");
 
                 //모든 서식 준비 완료
-                JOptionPane.showMessageDialog(frame, result , "결과", JOptionPane.INFORMATION_MESSAGE);
-                frame.dispose();
+                JOptionPane.showMessageDialog(mainFrame, result , "결과", JOptionPane.INFORMATION_MESSAGE);
+                mainFrame.dispose();
             }
         }
-
         ok.addActionListener(new OkAction());
 
-        frame.add(ok);
-        frame.add(panel);
+        mainFrame.add(ok);
+        mainFrame.add(panel);
 
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setLayout(null);
-        frame.setVisible(true);
+        mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mainFrame.setLayout(null);
+        mainFrame.setVisible(true);
+        mainFrame.setResizable(false);
     }
 
 }

@@ -1,24 +1,26 @@
 package server.module;
 
-import client.model.ResponseModel;
-import server.model.communication.ChattingRequest;
-import server.model.communication.CommunicationModel;
-import server.model.communication.LoginRequest;
-import server.model.communication.SignUpRequest;
+import server.model.response.ResponseModel;
+import server.model.ServerState;
+import server.model.request.*;
+
+import java.util.LinkedList;
 
 public class ServerController {
 
     private ServerService service;
 
-    public ServerController(ServerRepository repository) {
-        this.service = new ServerService(repository);
+    public ServerController(ServerRepository repository, LinkedList<ServerState> clientList) {
+        this.service = new ServerService(repository, clientList);
     }
 
-    public ResponseModel choiceService(CommunicationModel request){
+    public ResponseModel choiceService(RequestModel request){
 
         try{
             if(request instanceof LoginRequest){
-
+                return service.loginService((LoginRequest)request);
+            }else if(request instanceof CheckIdRequest){
+                return service.checkIdService((CheckIdRequest)request);
             }else if(request instanceof SignUpRequest){
                return service.signUpService((SignUpRequest)request);
             }else if(request instanceof ChattingRequest){

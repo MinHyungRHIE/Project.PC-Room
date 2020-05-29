@@ -2,7 +2,7 @@ package server.module;
 
 import server.database.table.Letter;
 import server.database.table.UserInfo;
-import server.model.communication.SignUpRequest;
+import server.model.request.SignUpRequest;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -67,6 +67,26 @@ public class ServerRepository {
             System.out.println(e);
             return false;
         }
+    }
+
+    /**
+     * 만일 true로 return하면 로그인 성공.
+     * false로 return하면 로그인 실패.
+     */
+    public boolean findUserInfo(String id, String password) throws Exception{
+        ObjectInputStream fromDatabase = new ObjectInputStream(new FileInputStream(dbUserInfo));
+        HashSet<UserInfo> data = (HashSet<UserInfo>)fromDatabase.readObject();
+
+        Iterator<UserInfo> itr = data.iterator();
+
+        while(itr.hasNext()){
+            UserInfo tmp = itr.next();
+            if(tmp.id.equals(id) && tmp.password.equals(password)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

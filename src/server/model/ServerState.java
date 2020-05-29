@@ -3,31 +3,30 @@ package server.model;
 import server.module.ServerRepository;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.util.LinkedList;
 
 public class ServerState {
 
     private Socket socket; // TCP 네트워킹 소켓
     private ServerRepository repository; // Database에 접근하는 객체
-    private InputStream inputStream; // receive data stream from client
-    private OutputStream outputStream; // send data stream to client
     private BufferedReader bufferedReader; // Client로부터 String을 받는 객체
     private PrintWriter printWriter; // Client에게 String를 보내는 객체
     private ObjectInputStream objectInputStream; // Client로부터 데이터를 객체 형태로 받는 객체
     private ObjectOutputStream objectOutputStream; // Client로 데이터를 객체 형태를 보내는 객체
     private boolean isInitialized = false;
     private boolean isDestroyed = false;
+    private User session;
 
     // 통신용 객체들을 Socket을 기반으로 모두 초기화하기
     public void initialize(){
         try{
             if(!isInitialized){
-                this.inputStream = socket.getInputStream();
-                this.outputStream = socket.getOutputStream();
-                this.bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                this.printWriter = new PrintWriter(new OutputStreamWriter((outputStream)));
-                this.objectInputStream = new ObjectInputStream(inputStream);
-                this.objectOutputStream = new ObjectOutputStream(outputStream);
+                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                this.printWriter = new PrintWriter(new OutputStreamWriter((socket.getOutputStream())));
+                this.objectInputStream = new ObjectInputStream(socket.getInputStream());
+                this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 isInitialized = true;
             }else{
                 System.out.println("이미 초기화가 되었습니다.");
@@ -43,15 +42,14 @@ public class ServerState {
         try {
             if(!isDestroyed){
 
+                InetAddress disconnect = socket.getInetAddress(); // 연결 해제 대상
                 if(bufferedReader != null) { bufferedReader.close(); };
                 if(printWriter != null) { printWriter.close();};
                 if(objectInputStream != null) { objectInputStream.close(); };
                 if(objectOutputStream != null) { objectOutputStream.close(); };
-                if(inputStream != null) { inputStream.close();};
-                if(outputStream != null) { outputStream.close(); };
                 if(socket != null) { socket.close(); };
                 isDestroyed = true;
-                System.out.println("통신 객체들이 close되었습니다. -- 클라이언트 접속 해제");
+                System.out.println("통신 객체들이 close되었습니다. -- 클라이언트 접속 해제["+disconnect+"]");
 
             }else{
                 System.out.println("이미 모든 통신 객체들이 close되었습니다.");
@@ -86,14 +84,19 @@ public class ServerState {
         return printWriter;
     }
 
-
     public ObjectInputStream getObjectInputStream() {
         return objectInputStream;
     }
-
-
+    
     public ObjectOutputStream getObjectOutputStream() {
         return objectOutputStream;
     }
 
+    public User getSession() {
+        return session;
+    }
+
+    public void setSession(User session) {
+        this.session = session;
+    }
 }
