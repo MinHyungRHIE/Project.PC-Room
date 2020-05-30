@@ -1,6 +1,7 @@
 package client.ui;
 
 import client.module.Connector;
+import server.model.request.ShowMyUsernameRequest;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,9 +11,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.util.HashMap;
 
-public class MainGUI extends JFrame {
-
+public class MainGUI extends JFrame implements GUI{
+    @Override
+    public String getGuiName() {
+        return GUI.MAIN;
+    }
     Connector connector;
     JFrame mainFrame;
 
@@ -43,10 +48,10 @@ public class MainGUI extends JFrame {
     public MainGUI(Connector connector) {
         this.connector = connector;
         this.mainFrame = this;
+        connector.request(new ShowMyUsernameRequest());
 
         mainFrame.setTitle("메인화면");
         mainFrame.setSize(720,750);
-
 
         /*** 사용자 프로필 보기 ***/
         JButton profileSettingBtn = new JButton();
@@ -100,7 +105,7 @@ public class MainGUI extends JFrame {
             }
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                if(e.getKeyCode() == KeyEvent.VK_ENTER && !typingField.getText().equals("")){
                     chatDisplay.setText(chattingText.append(typingField.getText()+"\n").toString());
                     typingField.setText("");
                 }
@@ -223,6 +228,11 @@ public class MainGUI extends JFrame {
         mainFrame.setVisible(true);
         mainFrame.setResizable(false);
 
+    }
+
+    public void showMyUsernameResult(HashMap<String,Object> data){
+        String username = (String)data.get("username");
+        this.username.setText(username);
     }
 
 }

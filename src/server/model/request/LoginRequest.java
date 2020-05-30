@@ -1,8 +1,20 @@
 package server.model.request;
 
+import client.ui.GUI;
+
 import java.io.Serializable;
 
 public class LoginRequest implements RequestModel, Serializable {
+    @Override
+    public String getRequestType() {
+        return RequestModel.LOGIN;
+    }
+    @Override
+    public String getResponseTarget() {
+        return GUI.LOGIN;
+    }
+
+
     private String id;
     private String password;
 
@@ -23,5 +35,6 @@ public class LoginRequest implements RequestModel, Serializable {
         this.password = password;
         return this;
     }
+
 
 }

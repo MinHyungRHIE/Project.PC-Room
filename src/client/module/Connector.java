@@ -6,16 +6,11 @@ import server.model.request.RequestModel;
 import server.model.response.ResponseModel;
 
 import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 public class Connector {
 
@@ -25,13 +20,15 @@ public class Connector {
     private ObjectInputStream responseData;
     private GuiManager guiManager;
 
+    Receiver recvThread;
+
     public void createGuiManager(){
         this.guiManager = new GuiManager();
     }
 
     public void guiManager(GuiProfile profile){
         try{
-            guiManager.GuiGenerator(profile, this);
+            guiManager.guiGenerator(profile, this);
         }catch (Exception e) {
             destoryAll();
             System.out.println("Connector-guiManager():" + e);
@@ -48,6 +45,9 @@ public class Connector {
             this.requestData = new ObjectOutputStream(sock.getOutputStream());
             this.responseData = new ObjectInputStream(sock.getInputStream());
 
+            this.recvThread = new Receiver(responseData, this);
+            recvThread.start();
+            System.out.println("===started Receiver Thread===");
 
             if(sock.isConnected()) {
                 System.out.println("서버와 연결 성공 [Client :"+sock.getInetAddress()+"--->"+sock.getLocalAddress()+": Server]");
@@ -55,6 +55,18 @@ public class Connector {
         }catch (Exception e) {
             System.out.println("Connector-connectToServer():" + e);
             e.printStackTrace();
+        }
+    }
+
+    //Receiver가 서버로 부터 응답을 받으면 실행되는 메서드
+    public void responseSignal(ResponseModel response){
+        System.out.println("invoke responseSignal()");
+        String requestType = response.requestType;
+
+        if(requestType.equals(RequestModel.PING)){
+            System.out.println("[ping]응답 성공");
+        }else{
+            guiManager.guiAccessor(response);
         }
     }
 
@@ -67,7 +79,7 @@ public class Connector {
             this.requestData = new ObjectOutputStream(sock.getOutputStream());
             this.responseData = new ObjectInputStream(sock.getInputStream());
 
-            if(sock.isConnected()) {
+            if(!sock.isClosed()) {
                 JOptionPane.showMessageDialog(null, "서버와 연결이 끊겨져 재연결을 시도합니다.", "재연결 시도",JOptionPane.WARNING_MESSAGE);
                 System.out.println("서버와 재연결 성공 [Client :"+sock.getInetAddress()+"--->"+sock.getLocalAddress()+": Server]");
                 JOptionPane.showMessageDialog(null, "연결에 성공하였습니다.", "재연결 성공",JOptionPane.INFORMATION_MESSAGE);
@@ -79,38 +91,12 @@ public class Connector {
         }
     }
 
-    public HashMap<String,Object> communicateWithServer(RequestModel sendToServer) {
-
-        HashMap<String,Object> result = null;
-        try {
-            // 서버에게 요청을 보낸다.
-            requestData.writeObject(sendToServer);
-
-            // 서버에게 요청을 받는다.
-            ResponseModel recvFromServer = (ResponseModel)responseData.readObject();
-
-            // 받은 요청을 처리한다.
-            result = recvFromServer.data;
-
-        }catch(SocketException se){
-            destoryAll();
-        }catch (Exception e) {
-            System.out.println("Connector-communicateWithServer():" + e);
-            e.printStackTrace();
-        }finally {
-            if(sock.isClosed()){
-                reconnect();
-            }
-        }
-        return result;
-    }
-
     public void ping() throws Exception{
         requestData.writeObject(new Ping());
-        System.out.println("[ping]서버에게 응답 받음");
+        System.out.println("[ping]"+sock.getLocalAddress());
     }
 
-    private void destoryAll(){
+    public void destoryAll(){
         JOptionPane.showMessageDialog(null, "서버와 연결이 안되어 있습니다.", "네트워크 오류",JOptionPane.WARNING_MESSAGE);
         try{
             if(requestData != null){
@@ -139,6 +125,21 @@ public class Connector {
             }
         }catch (Exception e){
             System.out.println("Connector-destoryAll():" + e);
+            e.printStackTrace();
+        }
+
+        reconnect();
+    }
+    
+    public void request(RequestModel sendToServer) {
+
+        try {
+            // 서버에게 요청을 보낸다. 서버에게 받는 응답은 Receiver 쓰레드가 처리할 것이다.
+            requestData.writeObject(sendToServer);
+        }catch(SocketException se){
+            destoryAll();
+        }catch (Exception e) {
+            System.out.println("Connector-request():" + e);
             e.printStackTrace();
         }
 

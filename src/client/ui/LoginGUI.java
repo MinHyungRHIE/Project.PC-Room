@@ -4,7 +4,6 @@ import client.module.Connector;
 import client.module.GuiManagerMode;
 import client.module.GuiProfile;
 import server.model.request.LoginRequest;
-import server.model.request.RequestModel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -13,8 +12,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 
-public class LoginGUI extends JFrame {
+public class LoginGUI extends JFrame implements GUI {
+    @Override
+    public String getGuiName() {
+        return GUI.LOGIN;
+    }
+    
     Connector connector;
     JFrame mainFrame;
 
@@ -63,23 +68,11 @@ public class LoginGUI extends JFrame {
                     JOptionPane.showMessageDialog(mainFrame, "빈칸이 있습니다.", "실패",JOptionPane.WARNING_MESSAGE);
                 }else {
 
-                    String result = (String)connector.communicateWithServer(
+                    connector.request(
                             new LoginRequest()
                             .setId(id)
                             .setPassword(pwd)
-                    ).get("result");
-
-                    if(result.equals("success")) {
-                        JOptionPane.showMessageDialog(mainFrame, "로그인 성공", "성공",JOptionPane.INFORMATION_MESSAGE);
-                        GuiProfile profile = new GuiProfile();
-                        profile.setGuiName("MainUI").setMode(GuiManagerMode.NEW_WINDOW_AND_CLOSE_ALL_OLD_WINDOW);
-                        connector.guiManager(profile);
-
-                    }else if(result.equals("fail")){
-                        JOptionPane.showMessageDialog(mainFrame, "로그인 실패", "실패",JOptionPane.ERROR_MESSAGE);
-                    }else if(result.equals("blocked")) {
-                        JOptionPane.showMessageDialog(mainFrame, "이미 접속중인 아이디입니다.", "누구냐 넌...",JOptionPane.ERROR_MESSAGE);
-                    }
+                    );
                 }
             }
         }//LoginAction.class
@@ -146,4 +139,20 @@ public class LoginGUI extends JFrame {
         mainFrame.setResizable(false);
     }
 
+    public void loginResult(HashMap<String, Object> data){
+
+        String result = (String)data.get("result");
+
+        if(result.equals("success")) {
+            JOptionPane.showMessageDialog(mainFrame, "로그인 성공", "성공",JOptionPane.INFORMATION_MESSAGE);
+            GuiProfile profile = new GuiProfile();
+            profile.setGuiName(GUI.MAIN).setMode(GuiManagerMode.NEW_WINDOW_AND_CLOSE_ALL_OLD_WINDOW);
+            connector.guiManager(profile);
+        }else if(result.equals("fail")){
+            JOptionPane.showMessageDialog(mainFrame, "로그인 실패", "실패",JOptionPane.ERROR_MESSAGE);
+        }else if(result.equals("blocked")) {
+            JOptionPane.showMessageDialog(mainFrame, "이미 접속중인 아이디입니다.", "누구냐 넌...",JOptionPane.ERROR_MESSAGE);
+        }
+
+    }
 }

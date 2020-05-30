@@ -1,8 +1,18 @@
 package server.model.request;
 
+import client.ui.GUI;
+
 import java.io.Serializable;
 
 public class SignUpRequest implements RequestModel, Serializable {
+    @Override
+    public String getRequestType() { return RequestModel.SIGNUP; }
+    @Override
+    public String getResponseTarget() {
+        return GUI.SIGNUP;
+    }
+
+
     private String id;
     private String password;
     private String username;
@@ -63,4 +73,6 @@ public class SignUpRequest implements RequestModel, Serializable {
         this.phoneNumber = phoneNumber;
         return this;
     }
+
+
 }

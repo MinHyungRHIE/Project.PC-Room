@@ -18,7 +18,7 @@ public class ServerController {
 
         try{
             if(request instanceof Ping){
-                return new ResponseModel();
+                return new ResponseModel(request);
             }else if(request instanceof LoginRequest){
                 return service.loginService((LoginRequest)request);
             }else if(request instanceof CheckIdRequest){
@@ -27,6 +27,8 @@ public class ServerController {
                return service.signUpService((SignUpRequest)request);
             }else if(request instanceof ChattingRequest){
 
+            }else if(request instanceof ShowMyUsernameRequest){
+                return service.showMyUsernameService((ShowMyUsernameRequest)request);
             }
 
         }catch (Exception e){

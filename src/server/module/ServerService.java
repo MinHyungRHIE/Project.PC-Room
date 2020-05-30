@@ -3,10 +3,7 @@ package server.module;
 import server.config.ProtocolOption;
 import server.model.ServerState;
 import server.model.User;
-import server.model.request.CheckIdRequest;
-import server.model.request.LoginRequest;
-import server.model.request.RequestModel;
-import server.model.request.SignUpRequest;
+import server.model.request.*;
 import server.model.response.ResponseModel;
 
 import java.util.LinkedList;
@@ -25,7 +22,7 @@ public class ServerService {
 
     public ResponseModel loginService(LoginRequest request) throws Exception{
         boolean isLogined = false;
-        ResponseModel response = new ResponseModel();
+        ResponseModel response = new ResponseModel(request);
 
         if(repository.findUserInfo(request.getId(), request.getPassword())){
             for(ServerState client : clientList){
@@ -50,7 +47,7 @@ public class ServerService {
 
     // 아이디 중복 확인 서비스
     public ResponseModel checkIdService(CheckIdRequest request) throws Exception{
-        ResponseModel response = new ResponseModel();
+        ResponseModel response = new ResponseModel(request);
         if(repository.findUserInfo(request.getId())){
             response.data.put("result",new Boolean(true));
         }else{
@@ -61,12 +58,19 @@ public class ServerService {
 
     // 회원가입 서비스
     public ResponseModel signUpService(SignUpRequest request) throws Exception{
-        ResponseModel response = new ResponseModel();
+        ResponseModel response = new ResponseModel(request);
         if(repository.updateUserInfo(request)){
             response.data.put("result", "회원가입 성공!");
         }else{
             response.data.put("result", "회원가입 실패!");
         }
+        return response;
+    }
+
+    // 로그인 후 자신의 유저 이름 알려주기
+    public ResponseModel showMyUsernameService(ShowMyUsernameRequest request) throws Exception{
+        ResponseModel response = new ResponseModel(request);
+        response.data.put("username",state.getSession().getUsername());
         return response;
     }
 

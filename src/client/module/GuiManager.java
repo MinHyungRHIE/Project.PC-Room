@@ -1,7 +1,15 @@
 package client.module;
 
+import client.ui.GUI;
+import client.ui.LoginGUI;
+import client.ui.MainGUI;
+import client.ui.SignUpGUI;
+import server.model.request.RequestModel;
+import server.model.response.ResponseModel;
+
 import javax.swing.*;
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class GuiManager {
@@ -12,7 +20,7 @@ public class GuiManager {
         this.currentGui = new LinkedList<JFrame>();
     }
 
-    public void GuiGenerator(GuiProfile profile, Connector connector) throws Exception{
+    public void guiGenerator(GuiProfile profile, Connector connector) throws Exception{
 
         connector.ping();
 
@@ -36,6 +44,42 @@ public class GuiManager {
         Class<?> gui = Class.forName(profile.getGuiName());
         Constructor<?> createGui = gui.getConstructor(Connector.class);
         currentGui.add((JFrame)createGui.newInstance(connector));
+    }
+
+    public void guiAccessor(ResponseModel response){
+
+        for(JFrame frame : currentGui){
+            GUI gui = (GUI)frame;
+
+            if(gui.getGuiName().equals(response.responseTarget)){
+
+                String type = response.requestType;
+                HashMap<String,Object> data = response.data;
+
+                if(type.equals(RequestModel.LOGIN)){
+                    ((LoginGUI)gui).loginResult(data);
+                    return;
+                }
+
+                if(type.equals(RequestModel.CHECK_ID)){
+                    ((SignUpGUI)gui).checkIdResult(data);
+                    return;
+                }
+
+                if(type.equals((RequestModel.SIGNUP))){
+                    ((SignUpGUI)gui).signUpResult(data);
+                    return;
+                }
+
+                if(type.equals((RequestModel.CHATTING))){
+
+                }
+
+                if(type.equals((RequestModel.SHOW_MY_USERNAME))){
+                    ((MainGUI)gui).showMyUsernameResult(data);
+                }
+            }
+        }
     }
 
 }

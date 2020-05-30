@@ -14,14 +14,32 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.util.HashMap;
 
-public class SignUpGUI extends JFrame{
+public class SignUpGUI extends JFrame implements GUI{
+    @Override
+    public String getGuiName() {
+        return GUI.SIGNUP;
+    }
+
     JFrame mainFrame;
     boolean isFirstAccess = true;
     boolean isCheckedId = false;
     String alreadyCheckedId = null;
     Connector connector;
 
+    JTextField inputId;
+    JTextField inputName;
+    JPasswordField inputPassword;
+    JPasswordField inputCP;
+    JComboBox<String> selectYear;
+    JComboBox<String> selectMonth;
+    JComboBox<String> selectDay;
+    ButtonGroup selectGender;
+    JRadioButton selectMale;
+    JRadioButton selectFemale;
+    JTextField inputPhone;
+    JLabel informPhone;
 
     public SignUpGUI(Connector connector){
         this.connector = connector;
@@ -32,8 +50,7 @@ public class SignUpGUI extends JFrame{
         mainFrame.setSize(460,690);
 
         /***아이디 생성부***/
-        JLabel id = new JLabel();
-        JTextField inputId = new JTextField();
+        this.inputId = new JTextField();
         JButton checkId = new JButton();
         inputId.setBounds(159,160,137,39);
         checkId.setBounds(314,158,80,41);
@@ -56,54 +73,37 @@ public class SignUpGUI extends JFrame{
                     return;
                 }
 
-                boolean isExist = (boolean)connector.communicateWithServer(
-                        new CheckIdRequest().setId(inputId.getText())
-                ).get("result");
+                connector.request(
+                    new CheckIdRequest().setId(inputId.getText())
+                );
 
-                if(isExist) {
-                    JOptionPane.showMessageDialog(mainFrame, "이미 사용중인 아이디입니다.", "아이디 중복",JOptionPane.ERROR_MESSAGE);
-                    isCheckedId = false;
-                    alreadyCheckedId=inputId.getText();
-                }else {
-                    JOptionPane.showMessageDialog(mainFrame, "멋진 아이디네요~! 사용가능합니다.", "성공",JOptionPane.INFORMATION_MESSAGE);
-                    isCheckedId = true;
-                    alreadyCheckedId=inputId.getText();
-                }
             }
         }//CheckIdAction.class
 
         checkId.addActionListener(new CheckIdAction());
 
 
-        mainFrame.add(id);
         mainFrame.add(inputId);
         mainFrame.add(checkId);
 
         /***이름 생성부***/
-        JLabel name = new JLabel();
-        JTextField inputName = new JTextField();
+        this.inputName = new JTextField();
         inputName.setBounds(160,209,102,40);
         inputName.setFont(new Font("돋움", Font.BOLD, 18));
-        mainFrame.add(name);
         mainFrame.add(inputName);
 
         /***비밀번호 생성부***/
-        JLabel password = new JLabel();
-        JPasswordField inputPassword = new JPasswordField();
+        this.inputPassword = new JPasswordField();
         inputPassword.setBounds(160,256,171,40);
         inputPassword.setFont(new Font("돋움", Font.BOLD, 18));
-        mainFrame.add(password);
         mainFrame.add(inputPassword);
 
-        JLabel passwordCheck = new JLabel();
-        JPasswordField inputCP = new JPasswordField();
+        this.inputCP = new JPasswordField();
         inputCP.setBounds(160,304,170,40);
         inputCP.setFont(new Font("돋움", Font.BOLD, 18));
-        mainFrame.add(passwordCheck);
         mainFrame.add(inputCP);
 
         /***생년월일 생성부***/
-        JLabel birth = new JLabel();
         //연별 데이터 생성
         int yearNum = 1980;
         String[] years = new String[50];
@@ -125,41 +125,39 @@ public class SignUpGUI extends JFrame{
             dayNum++;
         }
 
-        JComboBox<String> selectYear = new JComboBox<String>(years);
-        JComboBox<String> selectMonth = new JComboBox<String>(months);
-        JComboBox<String> selectDay = new JComboBox<String>(days);
+        this.selectYear = new JComboBox<String>(years);
+        this.selectMonth = new JComboBox<String>(months);
+        this.selectDay = new JComboBox<String>(days);
         selectYear.setBounds(160,352,68,41);
         selectYear.setFont(new Font("돋움", Font.BOLD, 15));
         selectMonth.setBounds(235,352,42,41);
         selectMonth.setFont(new Font("돋움", Font.BOLD, 12));
         selectDay.setBounds(283,352,41,41);
         selectDay.setFont(new Font("돋움", Font.BOLD, 12));
-        mainFrame.add(birth);
         mainFrame.add(selectYear);
         mainFrame.add(selectMonth);
         mainFrame.add(selectDay);
 
         /***성별 생성부***/
-        JLabel gender = new JLabel();
-        ButtonGroup selectGender = new ButtonGroup();
-        JRadioButton selectMale = new JRadioButton("남자");
-        JRadioButton selectFemale = new JRadioButton("여자");
+        this.selectGender = new ButtonGroup();
+        this.selectMale = new JRadioButton("남자");
+        this.selectFemale = new JRadioButton("여자");
         selectMale.setBounds(160,400,70,50);
         selectFemale.setBounds(250,400,70,50);
         selectMale.setFont(new Font("돋움", Font.PLAIN, 13));
         selectFemale.setFont(new Font("돋움", Font.PLAIN, 13));
-        selectGender.add(selectMale); selectGender.add(selectFemale);
-        mainFrame.add(gender);
+        selectGender.add(selectMale);
+        selectGender.add(selectFemale);
         mainFrame.add(selectMale);
         mainFrame.add(selectFemale);
 
         /***핸드폰 생성부***/
-        JLabel phone = new JLabel();
-        JTextField inputPhone = new JTextField();
-        JLabel informPhone = new JLabel();
+        this.inputPhone = new JTextField();
+        this.informPhone = new JLabel();
         inputPhone.setText("ex)01005240307");
         inputPhone.setBounds(160,453,217,41);
         inputPhone.setFont(new Font("돋움", Font.BOLD, 13));
+
         inputPhone.addMouseListener(new MouseListener() {
 
             public void mouseClicked(MouseEvent e) {
@@ -175,7 +173,7 @@ public class SignUpGUI extends JFrame{
             public void mouseExited(MouseEvent e) {}
 
         });
-        mainFrame.add(phone);
+
         mainFrame.add(inputPhone);
         mainFrame.add(informPhone);
 
@@ -185,30 +183,6 @@ public class SignUpGUI extends JFrame{
         ok.setBounds(51, 548, 348, 60);
         ok.setFocusPainted(false);
         ok.setContentAreaFilled(false);
-
-
-        Image img = null;
-        try {
-            img = ImageIO.read(new File("./img/SignUp.png"));
-        }catch(Exception e) {
-            System.out.println(e);
-        }
-
-        @SuppressWarnings("serial")
-        class MyPanel extends JPanel{
-
-            Image img =null;
-            MyPanel(Image img){
-                this.img = img;
-            }
-
-            public void paint(Graphics g) {
-                g.drawImage(img, 0, 0, null);
-            }
-        }
-
-        MyPanel panel = new MyPanel(img);
-        panel.setBounds(0,0,450,690);
 
         class OkAction implements ActionListener{
             @Override
@@ -283,7 +257,7 @@ public class SignUpGUI extends JFrame{
                     return;
                 }
 
-                String result = (String)connector.communicateWithServer(
+                connector.request(
                         new SignUpRequest()
                         .setId(id)
                         .setUsername(name)
@@ -291,24 +265,67 @@ public class SignUpGUI extends JFrame{
                         .setBirth(birth)
                         .setGender(gender)
                         .setPhoneNumber(phone)
-                ).get("result");
+                );
 
-                //모든 서식 준비 완료
-                JOptionPane.showMessageDialog(mainFrame, result , "결과", JOptionPane.INFORMATION_MESSAGE);
-                GuiProfile profile = new GuiProfile();
-                profile.setMode(GuiManagerMode.CLOSE_THIS_WINDOW).setTarget(mainFrame);
-                connector.guiManager(profile);
             }
         }
         ok.addActionListener(new OkAction());
 
         mainFrame.add(ok);
+
+        Image img = null;
+        try {
+            img = ImageIO.read(new File("./img/SignUp.png"));
+        }catch(Exception e) {
+            System.out.println(e);
+        }
+
+        @SuppressWarnings("serial")
+        class MyPanel extends JPanel{
+
+            Image img =null;
+            MyPanel(Image img){
+                this.img = img;
+            }
+
+            public void paint(Graphics g) {
+                g.drawImage(img, 0, 0, null);
+            }
+        }
+
+        MyPanel panel = new MyPanel(img);
+        panel.setBounds(0,0,450,690);
+
         mainFrame.add(panel);
 
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mainFrame.setLayout(null);
         mainFrame.setVisible(true);
         mainFrame.setResizable(false);
+    }
+
+    public void checkIdResult(HashMap<String, Object> data){
+        boolean isExist = (boolean)data.get("result");
+
+        if(isExist) {
+            JOptionPane.showMessageDialog(mainFrame, "이미 사용중인 아이디입니다.", "아이디 중복",JOptionPane.ERROR_MESSAGE);
+            isCheckedId = false;
+            alreadyCheckedId=inputId.getText();
+        }else {
+            JOptionPane.showMessageDialog(mainFrame, "멋진 아이디네요~! 사용가능합니다.", "성공",JOptionPane.INFORMATION_MESSAGE);
+            isCheckedId = true;
+            alreadyCheckedId=inputId.getText();
+        }
+    }
+
+    public void signUpResult(HashMap<String, Object> data){
+        String result = (String)data.get("result");
+
+        //모든 서식 준비 완료
+        JOptionPane.showMessageDialog(mainFrame, result , "결과", JOptionPane.INFORMATION_MESSAGE);
+        GuiProfile profile = new GuiProfile();
+        profile.setMode(GuiManagerMode.CLOSE_THIS_WINDOW).setTarget(mainFrame);
+        connector.guiManager(profile);
     }
 
 }
