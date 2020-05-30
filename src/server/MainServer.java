@@ -28,7 +28,7 @@ public class MainServer {
             ServerRepository repo = new ServerRepository();
             repo.checkDatabaseState();
 
-            // 서버에 연결된 client들의 정보를 얻는 객체 (모든 Thread들이 공유
+            // 서버에 연결된 client들의 정보를 얻는 객체 (모든 Thread들이 공유)
             LinkedList<ServerState> clientList = new LinkedList<ServerState>();
 
             // 서버 리스닝 시작

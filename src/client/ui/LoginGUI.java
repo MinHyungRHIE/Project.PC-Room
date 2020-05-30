@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashMap;
 
 public class LoginGUI extends JFrame {
     Connector connector;
@@ -73,6 +74,7 @@ public class LoginGUI extends JFrame {
                         GuiProfile profile = new GuiProfile();
                         profile.setGuiName("MainUI").setMode(GuiManagerMode.NEW_WINDOW_AND_CLOSE_ALL_OLD_WINDOW);
                         connector.guiManager(profile);
+
                     }else if(result.equals("fail")){
                         JOptionPane.showMessageDialog(mainFrame, "로그인 실패", "실패",JOptionPane.ERROR_MESSAGE);
                     }else if(result.equals("blocked")) {

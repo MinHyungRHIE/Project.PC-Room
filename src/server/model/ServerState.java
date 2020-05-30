@@ -13,8 +13,6 @@ public class ServerState {
 
     private Socket socket; // TCP 네트워킹 소켓
     private ServerRepository repository; // Database에 접근하는 객체
-    private BufferedReader bufferedReader; // Client로부터 String을 받는 객체
-    private PrintWriter printWriter; // Client에게 String를 보내는 객체
     private ObjectInputStream objectInputStream; // Client로부터 데이터를 객체 형태로 받는 객체
     private ObjectOutputStream objectOutputStream; // Client로 데이터를 객체 형태를 보내는 객체
     private boolean isInitialized = false;
@@ -26,8 +24,6 @@ public class ServerState {
     public void initialize(){
         try{
             if(!isInitialized){
-                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                this.printWriter = new PrintWriter(new OutputStreamWriter((socket.getOutputStream())));
                 this.objectInputStream = new ObjectInputStream(socket.getInputStream());
                 this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 isInitialized = true;
@@ -48,8 +44,6 @@ public class ServerState {
             if(!isDestroyed){
 
                 InetAddress disconnect = socket.getInetAddress(); // 연결 해제 대상
-                if(bufferedReader != null) { bufferedReader.close(); };
-                if(printWriter != null) { printWriter.close();};
                 if(objectInputStream != null) { objectInputStream.close(); };
                 if(objectOutputStream != null) { objectOutputStream.close(); };
                 if(socket != null) { socket.close(); };
@@ -84,22 +78,6 @@ public class ServerState {
 
     public void setRepository(ServerRepository repository) {
         this.repository = repository;
-    }
-
-    public BufferedReader getBufferedReader() {
-        return bufferedReader;
-    }
-
-    public void setBufferedReader(BufferedReader bufferedReader) {
-        this.bufferedReader = bufferedReader;
-    }
-
-    public PrintWriter getPrintWriter() {
-        return printWriter;
-    }
-
-    public void setPrintWriter(PrintWriter printWriter) {
-        this.printWriter = printWriter;
     }
 
     public ObjectInputStream getObjectInputStream() {

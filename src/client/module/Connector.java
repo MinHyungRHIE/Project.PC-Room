@@ -48,6 +48,7 @@ public class Connector {
             this.requestData = new ObjectOutputStream(sock.getOutputStream());
             this.responseData = new ObjectInputStream(sock.getInputStream());
 
+
             if(sock.isConnected()) {
                 System.out.println("서버와 연결 성공 [Client :"+sock.getInetAddress()+"--->"+sock.getLocalAddress()+": Server]");
             }
@@ -106,7 +107,6 @@ public class Connector {
 
     public void ping() throws Exception{
         requestData.writeObject(new Ping());
-        responseData.readObject();
         System.out.println("[ping]서버에게 응답 받음");
     }
 

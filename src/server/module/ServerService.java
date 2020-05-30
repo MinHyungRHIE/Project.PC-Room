@@ -1,9 +1,11 @@
 package server.module;
 
+import server.config.ProtocolOption;
 import server.model.ServerState;
 import server.model.User;
 import server.model.request.CheckIdRequest;
 import server.model.request.LoginRequest;
+import server.model.request.RequestModel;
 import server.model.request.SignUpRequest;
 import server.model.response.ResponseModel;
 
@@ -67,4 +69,5 @@ public class ServerService {
         }
         return response;
     }
+
 }

@@ -19,7 +19,7 @@ public class ServerRepository {
      * 서버를 키기 전에 DB를 체크한다.
      * 만일 DB가 없다면 추가한다.
      */
-    public void checkDatabaseState() throws Exception{
+    public synchronized  void checkDatabaseState() throws Exception{
         System.out.println("=====데이터베이스 검사중=====");
 
         if(!checkDatabsePath(dbUserInfo)){
@@ -73,7 +73,7 @@ public class ServerRepository {
      * 만일 true로 return하면 로그인 성공.
      * false로 return하면 로그인 실패.
      */
-    public boolean findUserInfo(String id, String password) throws Exception{
+    public synchronized boolean findUserInfo(String id, String password) throws Exception{
         ObjectInputStream fromDatabase = new ObjectInputStream(new FileInputStream(dbUserInfo));
         HashSet<UserInfo> data = (HashSet<UserInfo>)fromDatabase.readObject();
 
@@ -93,7 +93,7 @@ public class ServerRepository {
      * 만일 true로 return하면 database에 해당 ID가 있는거고, 이때는 해당 ID를 쓸 수 없다.
      * false로 return하면 database에 해당 ID가 없다는 것이니, 써도된다.
      */
-    public boolean findUserInfo(String id) throws Exception{
+    public synchronized boolean findUserInfo(String id) throws Exception{
         ObjectInputStream fromDatabase = new ObjectInputStream(new FileInputStream(dbUserInfo));
         HashSet<UserInfo> data = (HashSet<UserInfo>)fromDatabase.readObject();
 
@@ -112,7 +112,7 @@ public class ServerRepository {
     /**
      * 회원가입 요청을 보낸 유저의 정보를 DB에 저장한다.
      */
-    public boolean updateUserInfo(SignUpRequest request) throws Exception{
+    public synchronized boolean updateUserInfo(SignUpRequest request) throws Exception{
         ObjectInputStream fromDatabase = new ObjectInputStream(new FileInputStream(dbUserInfo));
         HashSet<UserInfo> data = (HashSet<UserInfo>)fromDatabase.readObject();
 
@@ -135,7 +135,7 @@ public class ServerRepository {
     /**
      * 유저 정보를 얻는다.
      */
-    public UserInfo getUserInfo(String id) throws Exception{
+    public synchronized UserInfo getUserInfo(String id) throws Exception{
         ObjectInputStream fromDatabase = new ObjectInputStream(new FileInputStream(dbUserInfo));
         HashSet<UserInfo> data = (HashSet<UserInfo>)fromDatabase.readObject();
 

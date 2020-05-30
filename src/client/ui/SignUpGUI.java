@@ -22,6 +22,7 @@ public class SignUpGUI extends JFrame{
     String alreadyCheckedId = null;
     Connector connector;
 
+
     public SignUpGUI(Connector connector){
         this.connector = connector;
         this.mainFrame = this;

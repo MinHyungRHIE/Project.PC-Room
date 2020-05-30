@@ -14,6 +14,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 public class test {
+
+    int num;
+    String str;
+
+    public test(String str){
+        this.str = str;
+    }
+
     public static void main(String[] args) throws Exception{
 //        String databasePath = "./src/server/database/Letter";
 //        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(databasePath));
@@ -83,6 +91,6 @@ public class test {
 
     @Override
     public String toString() {
-        return "test";
+        return "test : " + str;
     }
 }
