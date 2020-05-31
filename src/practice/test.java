@@ -86,7 +86,8 @@ public class test {
 //        System.out.println(currentGui.size());
 
 
-        LinkedList<JFrame> currentGui = new LinkedList<JFrame>();
+        HashMap<String, String> hm = new HashMap<String, String>();
+        System.out.println(hm.get("hihi"));
     }
 
     @Override

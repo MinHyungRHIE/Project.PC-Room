@@ -25,8 +25,8 @@ public class ServerController {
                 return service.checkIdService((CheckIdRequest)request);
             }else if(request instanceof SignUpRequest){
                return service.signUpService((SignUpRequest)request);
-            }else if(request instanceof ChattingRequest){
-
+            }else if(request instanceof OpenChattingRequest){
+                return service.openChattingService((OpenChattingRequest)request);
             }else if(request instanceof ShowMyUsernameRequest){
                 return service.showMyUsernameService((ShowMyUsernameRequest)request);
             }

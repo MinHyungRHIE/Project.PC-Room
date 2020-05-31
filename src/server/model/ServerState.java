@@ -5,7 +5,6 @@ import server.module.ServerRepository;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.LinkedList;
 
@@ -13,6 +12,7 @@ public class ServerState {
 
     private Socket socket; // TCP 네트워킹 소켓
     private ServerRepository repository; // Database에 접근하는 객체
+    private LinkedList<ChattingRoom> chattingRoomList; // 채팅방 목록에 접근하는 객체
     private ObjectInputStream objectInputStream; // Client로부터 데이터를 객체 형태로 받는 객체
     private ObjectOutputStream objectOutputStream; // Client로 데이터를 객체 형태를 보내는 객체
     private boolean isInitialized = false;
@@ -78,6 +78,14 @@ public class ServerState {
 
     public void setRepository(ServerRepository repository) {
         this.repository = repository;
+    }
+
+    public LinkedList<ChattingRoom> getChattingRoomList() {
+        return chattingRoomList;
+    }
+
+    public void setChattingRoomList(LinkedList<ChattingRoom> chattingRoomList) {
+        this.chattingRoomList = chattingRoomList;
     }
 
     public ObjectInputStream getObjectInputStream() {

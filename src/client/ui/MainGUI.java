@@ -1,6 +1,7 @@
 package client.ui;
 
 import client.module.Connector;
+import server.model.request.OpenChattingRequest;
 import server.model.request.ShowMyUsernameRequest;
 
 import javax.imageio.ImageIO;
@@ -22,6 +23,7 @@ public class MainGUI extends JFrame implements GUI{
     JFrame mainFrame;
 
     /** Setting **/
+    String id;
     JLabel username;
     JEditorPane chatDisplay;
     JTextField typingField;
@@ -49,6 +51,10 @@ public class MainGUI extends JFrame implements GUI{
         this.connector = connector;
         this.mainFrame = this;
         connector.request(new ShowMyUsernameRequest());
+        connector.request(
+                new OpenChattingRequest()
+                .setFirstAccess(true)
+        );
 
         mainFrame.setTitle("메인화면");
         mainFrame.setSize(720,750);
@@ -72,7 +78,6 @@ public class MainGUI extends JFrame implements GUI{
 
         /*** 사용자 아이디 정보 보여주기 ***/
         this.username = new JLabel();
-        this.username.setText("테스트유저저저저");
         this.username.setBounds(210,35,210,67);
         this.username.setFont(new Font("HY견고딕",Font.BOLD,24));
         this.username.setForeground(Color.BLACK);
@@ -84,7 +89,6 @@ public class MainGUI extends JFrame implements GUI{
 
         this.chatDisplay = new JEditorPane(); // 서브 프레임에 넣을 텍스트 컴포넌트 생성
         this.chatDisplay.setContentType("text/plain");
-        this.chatDisplay.setText(chattingText.append("==접속을 환영합니다==\n").toString()); //TEST
         this.chatDisplay.setFont(new Font("Serif",Font.BOLD,17));
         this.chatDisplay.setEditable(false);
 
@@ -106,7 +110,10 @@ public class MainGUI extends JFrame implements GUI{
             @Override
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER && !typingField.getText().equals("")){
-                    chatDisplay.setText(chattingText.append(typingField.getText()+"\n").toString());
+                    connector.request(
+                            new OpenChattingRequest()
+                            .setMsg(typingField.getText())
+                    );
                     typingField.setText("");
                 }
             }
@@ -232,7 +239,40 @@ public class MainGUI extends JFrame implements GUI{
 
     public void showMyUsernameResult(HashMap<String,Object> data){
         String username = (String)data.get("username");
+        String id = (String)data.get("id");
         this.username.setText(username);
+        this.id = id;
+    }
+
+    public void openChattingResult(HashMap<String, Object> data){
+        String senderId = (String)data.get("senderId");
+        String senderUsername = (String)data.get("senderUsername");
+        String msg = (String)data.get("msg");
+
+        System.out.println("openChattingResult() - [id:"+this.id+"], [username:"+this.username.getText()+"]");
+
+        // GUI에 해당 유저 정보를 서버로부터 얻어 왔는지 안 왔는지 확인하고, 없으면 다시 오픈채팅방 접속을 요청한다.
+        if(this.id == null && this.username.getText().equals("")){
+            connector.request(
+                    new OpenChattingRequest()
+                            .setFirstAccess(true)
+            );
+            return;
+        }
+
+        if(this.id.equals(senderId) && this.username.getText().equals(senderUsername)){ // 내 자신이 보낸 메시지를 echo받은 경우
+            if(data.get("welcome")!=null){
+                this.chatDisplay.setText(chattingText.append(((String)data.get("welcome"))+"\n").toString());
+            }else{
+                this.chatDisplay.setText(chattingText.append("나: "+msg+"\n").toString());
+            }
+        }else{ // 다른 사람이 보낸 메시지를 echo받은 경우
+            if(data.get("inform")!=null){
+                this.chatDisplay.setText(chattingText.append(((String)data.get("inform"))+"\n").toString());
+            }else{
+                this.chatDisplay.setText(chattingText.append("["+senderUsername+"]("+senderId+"): "+msg+"\n").toString());
+            }
+        }
     }
 
 }

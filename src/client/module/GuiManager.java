@@ -58,21 +58,19 @@ public class GuiManager {
 
                 if(type.equals(RequestModel.LOGIN)){
                     ((LoginGUI)gui).loginResult(data);
-                    return;
                 }
 
                 if(type.equals(RequestModel.CHECK_ID)){
                     ((SignUpGUI)gui).checkIdResult(data);
-                    return;
+
                 }
 
                 if(type.equals((RequestModel.SIGNUP))){
                     ((SignUpGUI)gui).signUpResult(data);
-                    return;
                 }
 
-                if(type.equals((RequestModel.CHATTING))){
-
+                if(type.equals((RequestModel.OPEN_CHATTING))){
+                    ((MainGUI)gui).openChattingResult(data);
                 }
 
                 if(type.equals((RequestModel.SHOW_MY_USERNAME))){

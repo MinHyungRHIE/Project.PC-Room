@@ -8,7 +8,7 @@ public interface RequestModel {
     public final static String CHECK_ID = "CHECK_ID";
     public final static String SIGNUP = "SIGNUP";
     public final static String SHOW_MY_USERNAME = "SHOW_MY_USERNAME";
-    public final static String CHATTING = "CHATTING";
+    public final static String OPEN_CHATTING = "OPEN_CHATTING";
 
 
     public abstract String getRequestType();
