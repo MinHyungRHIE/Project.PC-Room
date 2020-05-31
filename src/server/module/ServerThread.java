@@ -1,6 +1,8 @@
 package server.module;
 
 import server.config.ProtocolOption;
+import server.model.ChattingRoom;
+import server.model.request.BroadcastExitUserRequest;
 import server.model.response.ResponseModel;
 import server.model.ServerState;
 import server.model.request.RequestModel;
@@ -32,7 +34,29 @@ public class ServerThread extends Thread{
                 e.printStackTrace();
                 state.destroy();
                 clientList.remove(this.state);
+
+                ResponseModel response = new ResponseModel(new BroadcastExitUserRequest());
+                response.data.put("senderId",state.getSession().getId());
+                response.data.put("senderUsername",state.getSession().getUsername());
+                response.data.put("msg","님과 연결이 끊겼습니다.");
+
+                try{
+                    for(ServerState client : clientList){
+                        if(client != this.state){
+                            client.getObjectOutputStream().writeObject(response);
+                        }
+                    }
+                }catch (Exception e2){
+                    System.out.println("유저 에러 공지 실패 : " + e2);
+                    e2.printStackTrace();
+                }
+
                 System.out.println("clientList["+clientList.size()+"] : "+clientList);
+                for(ChattingRoom chattingRoom : state.getChattingRoomList()){
+                    if(chattingRoom.getRoomType() == ChattingRoom.OPEN_CHATTING){
+                        System.out.println("클라이언트 유저 오픈 채팅방 접속, 현재 오픈채팅방 유저 수 : " + chattingRoom.getParticipants().size());
+                    }
+                }
                 return;
             }
         }

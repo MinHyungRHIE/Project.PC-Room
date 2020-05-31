@@ -1,5 +1,6 @@
 package client.module;
 
+import client.ui.GUI;
 import server.config.ServerConfiguration;
 import server.model.request.Ping;
 import server.model.request.RequestModel;
@@ -71,6 +72,7 @@ public class Connector {
     }
 
     private void reconnect(){
+        JOptionPane.showMessageDialog(null, "서버와 연결이 끊겨져 재연결을 시도합니다.", "재연결 시도",JOptionPane.WARNING_MESSAGE);
         try {
             this.sock = new Socket();
             this.ipep = new InetSocketAddress(ServerConfiguration.IP, ServerConfiguration.PORT);
@@ -79,10 +81,16 @@ public class Connector {
             this.requestData = new ObjectOutputStream(sock.getOutputStream());
             this.responseData = new ObjectInputStream(sock.getInputStream());
 
+            this.recvThread = new Receiver(responseData, this);
+            recvThread.start();
+            System.out.println("===started Receiver Thread===");
+
             if(!sock.isClosed()) {
-                JOptionPane.showMessageDialog(null, "서버와 연결이 끊겨져 재연결을 시도합니다.", "재연결 시도",JOptionPane.WARNING_MESSAGE);
                 System.out.println("서버와 재연결 성공 [Client :"+sock.getInetAddress()+"--->"+sock.getLocalAddress()+": Server]");
                 JOptionPane.showMessageDialog(null, "연결에 성공하였습니다.", "재연결 성공",JOptionPane.INFORMATION_MESSAGE);
+                GuiProfile profile = new GuiProfile();
+                profile.setGuiName(GUI.LOGIN).setMode(GuiManagerMode.NEW_WINDOW_AND_CLOSE_ALL_OLD_WINDOW);
+                guiManager(profile);
             }
         }catch (Exception e) {
             JOptionPane.showMessageDialog(null, "연결 실패", "재연결 시도",JOptionPane.WARNING_MESSAGE);

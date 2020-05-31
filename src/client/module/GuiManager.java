@@ -47,14 +47,13 @@ public class GuiManager {
     }
 
     public void guiAccessor(ResponseModel response){
+        String type = response.requestType;
+        HashMap<String,Object> data = response.data;
 
         for(JFrame frame : currentGui){
             GUI gui = (GUI)frame;
 
             if(gui.getGuiName().equals(response.responseTarget)){
-
-                String type = response.requestType;
-                HashMap<String,Object> data = response.data;
 
                 if(type.equals(RequestModel.LOGIN)){
                     ((LoginGUI)gui).loginResult(data);
@@ -75,6 +74,12 @@ public class GuiManager {
 
                 if(type.equals((RequestModel.SHOW_MY_USERNAME))){
                     ((MainGUI)gui).showMyUsernameResult(data);
+                }
+            }
+
+            if(response.responseTarget.equals("ALL")){
+                if(gui instanceof MainGUI){
+                    ((MainGUI)gui).openChattingResult(data);
                 }
             }
         }

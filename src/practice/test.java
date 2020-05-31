@@ -4,6 +4,7 @@ import client.module.Connector;
 import client.ui.LoginGUI;
 import server.database.table.Letter;
 import server.database.table.UserInfo;
+import server.model.User;
 
 import javax.swing.*;
 import java.io.FileInputStream;
@@ -86,8 +87,8 @@ public class test {
 //        System.out.println(currentGui.size());
 
 
-        HashMap<String, String> hm = new HashMap<String, String>();
-        System.out.println(hm.get("hihi"));
+        LinkedList<User> test = new LinkedList<>();
+        System.out.println(test.remove("dfd"));
     }
 
     @Override

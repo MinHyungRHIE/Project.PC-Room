@@ -140,7 +140,7 @@ public class LoginGUI extends JFrame implements GUI {
     }
 
     public void loginResult(HashMap<String, Object> data){
-
+        System.out.println("loginResult()");
         String result = (String)data.get("result");
 
         if(result.equals("success")) {

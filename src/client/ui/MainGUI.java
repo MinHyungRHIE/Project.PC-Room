@@ -26,6 +26,7 @@ public class MainGUI extends JFrame implements GUI{
     String id;
     JLabel username;
     JEditorPane chatDisplay;
+    JScrollPane scroll;
     JTextField typingField;
     StringBuffer chattingText = new StringBuffer();
 
@@ -92,7 +93,8 @@ public class MainGUI extends JFrame implements GUI{
         this.chatDisplay.setFont(new Font("Serif",Font.BOLD,17));
         this.chatDisplay.setEditable(false);
 
-        JScrollPane scroll = new JScrollPane(this.chatDisplay); // 텍스트 컴포넌트에 스크롤 기능 추가
+
+        this.scroll = new JScrollPane(this.chatDisplay); // 텍스트 컴포넌트에 스크롤 기능 추가
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         chatDisplayFrame.add(scroll);
@@ -249,8 +251,6 @@ public class MainGUI extends JFrame implements GUI{
         String senderUsername = (String)data.get("senderUsername");
         String msg = (String)data.get("msg");
 
-        System.out.println("openChattingResult() - [id:"+this.id+"], [username:"+this.username.getText()+"]");
-
         // GUI에 해당 유저 정보를 서버로부터 얻어 왔는지 안 왔는지 확인하고, 없으면 다시 오픈채팅방 접속을 요청한다.
         if(this.id == null && this.username.getText().equals("")){
             connector.request(
@@ -273,6 +273,7 @@ public class MainGUI extends JFrame implements GUI{
                 this.chatDisplay.setText(chattingText.append("["+senderUsername+"]("+senderId+"): "+msg+"\n").toString());
             }
         }
+        scroll.getVerticalScrollBar().setValue(scroll.getVerticalScrollBar().getMaximum());
     }
 
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public interface RequestModel {
     public final static String PING = "PING";
+    public final static String BROADCAST_EXIT_USER = "BROADCAST_EXIT_USER";
     public final static String LOGIN = "LOGIN";
     public final static String CHECK_ID = "CHECK_ID";
     public final static String SIGNUP = "SIGNUP";

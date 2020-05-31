@@ -50,6 +50,10 @@ public class ServerState {
                 isDestroyed = true;
                 System.out.println("통신 객체들이 close되었습니다. -- 클라이언트 접속 해제["+disconnect+"]");
 
+                for(ChattingRoom chattingRoom : chattingRoomList){
+                    chattingRoom.getParticipants().remove(session);
+                }
+
             }else{
                 System.out.println("이미 모든 통신 객체들이 close되었습니다.");
             }
